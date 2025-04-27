@@ -1,6 +1,6 @@
 module loadtesting
 
-go 1.24.1
+go 1.22.12
 
 require github.com/tsenart/vegeta/v12 v12.12.0
 
