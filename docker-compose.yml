@@ -7,25 +7,27 @@ services:
     container_name: podperf_app
     ports:
       - "8080:8080"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:24224"
-        tag: app.logs
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
+    volumes:
+      - app-logs:/var/log/app
     depends_on:
       - fluent-bit
+      - otel-collector
     restart: unless-stopped
     networks:
       - podperf-network
 
   fluent-bit:
     image: fluent/fluent-bit:latest
+    container_name: podperf_fluent_bit
     ports:
       - "24224:24224"
       - "24224:24224/udp"
       - "2020:2020"
     volumes:
       - ./fluent-bit/conf:/fluent-bit/etc
+      - app-logs:/var/log/app:ro
     environment:
       - TZ=UTC
     depends_on:
@@ -105,6 +107,35 @@ services:
     networks:
       - podperf-network
 
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: podperf_otel_collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPCreceiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8888:8888"   # Prometheus metrics exposed by collector
+      - "8889:8889"   # Prome exporter metrics
+      - "13133:13133" # Health check
+    depends_on:
+      - zipkin
+    restart: unless-stopped
+    networks:
+      - podperf-network
+
+  # Zipkin
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: podperf_zipkin
+    ports:
+      - "9411:9411"   # UI
+    restart: unless-stopped
+    networks:
+      - podperf-network
+
 networks:
   podperf-network:
     driver: bridge
@@ -112,4 +143,5 @@ networks:
 volumes:
   opensearch-data:
   prometheus-data:
-  grafana-data: 
+  grafana-data:
+  app-logs: 

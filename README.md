@@ -1,5 +1,36 @@
 # PodPerf
 
+## Project Overview
+
+PodPerf is a comprehensive observability playground that demonstrates the implementation of the three pillars of observability:
+
+1. **Logs**: Capturing detailed application events using structured logging
+2. **Metrics**: Measuring and monitoring application performance 
+3. **Traces**: Tracking the flow of requests through distributed systems
+
+The primary purpose of this project is to:
+- Provide a hands-on learning environment for understanding observability concepts
+- Demonstrate the intricacies involved in setting up a complete observability stack
+- Serve as a playground for anyone wanting to experiment with modern observability tools
+- Showcase integration patterns between different observability technologies
+
+### Tech Stack
+
+This project leverages a modern observability stack:
+
+- **Application**: Go-based service with a merge sort algorithm
+- **Logs**: 
+  - Fluent Bit for log collection and forwarding
+  - OpenSearch for log storage and search
+  - OpenSearch Dashboards for log visualization
+- **Metrics**:
+  - Prometheus for metrics collection and storage
+  - Grafana for metrics visualization and dashboarding
+- **Traces**:
+  - OpenTelemetry for instrumentation and trace collection
+  - OpenTelemetry Collector for trace processing
+  - Zipkin for distributed trace visualization
+
 ## Running with Docker Compose
 
 This setup includes:
@@ -8,6 +39,8 @@ This setup includes:
 - OpenSearch for log storage and visualization
 - Prometheus for metrics collection
 - Grafana for metrics visualization
+- OpenTelemetry Collector for traces collection
+- Zipkin for distributed tracing visualization
 
 ### Getting Started
 
@@ -105,6 +138,13 @@ Login with:
 - Username: admin
 - Password: admin
 
+#### Traces
+
+1. Access Zipkin UI:
+```
+http://localhost:9411
+```
+
 ### Configuration
 
 - App logs are shipped to Fluent Bit using the Fluentd log driver
@@ -113,6 +153,9 @@ Login with:
 - OpenSearch Dashboards provides log visualization
 - App metrics are exposed at `/metrics` endpoint and collected by Prometheus
 - Grafana connects to Prometheus for metrics visualization
+- App traces are sent to OpenTelemetry Collector using OTLP over gRPC
+- OpenTelemetry Collector processes and forwards traces to Zipkin
+- Zipkin provides trace visualization and analysis
 
 ### Setting Up OpenSearch Dashboards
 
@@ -151,3 +194,14 @@ Login with:
    - Error count: `podperf_errors_total`
    - Array size: `podperf_array_size`
    - Request rate: `rate(podperf_sort_requests_total[5m])`
+
+### Using Zipkin for Distributed Tracing
+
+1. Open Zipkin UI at http://localhost:9411
+2. From the service dropdown, select "podperf-zipkin-service"
+3. Click "Find Traces" to view the traces
+4. Analyze the distributed traces of your sort operations:
+   - View the complete request lifecycle
+   - Examine the spans for each operation (sort handler, array generation, sorting)
+   - Analyze performance bottlenecks
+   - Correlate traces with logs and metrics for comprehensive observability
