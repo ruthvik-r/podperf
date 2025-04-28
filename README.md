@@ -138,6 +138,11 @@ Login with:
 - Username: admin
 - Password: admin
 
+3. Access cAdvisor:
+```
+http://localhost:8081
+```
+
 #### Traces
 
 1. Access Zipkin UI:
