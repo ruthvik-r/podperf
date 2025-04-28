@@ -47,8 +47,10 @@ This setup includes:
 1. Build and start the services:
 
 ```bash
-docker-compose up -d
+docker-compose up -d --compatibility
 ```
+
+> **Note:** The `--compatibility` flag is required for Docker Compose to enforce resource limits (like CPU). Without this flag, CPU limits does not work, since it is feature of Docker Swarm
 
 2. Check the logs:
 

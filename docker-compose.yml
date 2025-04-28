@@ -17,6 +17,10 @@ services:
     restart: unless-stopped
     networks:
       - podperf-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
 
   fluent-bit:
     image: fluent/fluent-bit:latest
